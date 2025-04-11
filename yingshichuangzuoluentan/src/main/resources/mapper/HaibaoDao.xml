@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HaibaoDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yugaopian_id as yugaopianId
+        ,a.haibao_photo as haibaoPhoto
+        ,a.haibao_name as haibaoName
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HaibaoView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yugaopian.yugaopian_uuid_number as yugaopianUuidNumber
+        ,yugaopian.yugaopian_name as yugaopianName
+        ,yugaopian.yugaopian_types as yugaopianTypes
+        ,yugaopian.yugaopian_photo as yugaopianPhoto
+        ,yugaopian.yugaopian_video as yugaopianVideo
+        ,yugaopian.yugaopian_danyan as yugaopianDanyan
+        ,yugaopian.yugaopian_bianju as yugaopianBianju
+        ,yugaopian.yugaopian_address as yugaopianAddress
+        ,yugaopian.yugaopian_yuyan as yugaopianYuyan
+        ,yugaopian.yugaopian_shijian as yugaopianShijian
+        ,yugaopian.yugaopian_pianchang as yugaopianPianchang
+        ,yugaopian.yugaopian_content as yugaopianContent
+
+        FROM haibao  a
+        left JOIN yugaopian yugaopian ON a.yugaopian_id = yugaopian.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yugaopianId != null and params.yugaopianId != ''">
+                and (
+                    a.yugaopian_id = #{params.yugaopianId}
+                )
+            </if>
+            <if test=" params.haibaoName != '' and params.haibaoName != null and params.haibaoName != 'null' ">
+                and a.haibao_name like CONCAT('%',#{params.haibaoName},'%')
+            </if>
+
+                <!-- 判断预告的id不为空 -->
+            <if test=" params.yugaopianIdNotNull != '' and params.yugaopianIdNotNull != null and params.yugaopianIdNotNull != 'null' ">
+                and a.yugaopian_id IS NOT NULL
+            </if>
+            <if test=" params.yugaopianUuidNumber != '' and params.yugaopianUuidNumber != null and params.yugaopianUuidNumber != 'null' ">
+                and yugaopian.yugaopian_uuid_number like CONCAT('%',#{params.yugaopianUuidNumber},'%')
+            </if>
+            <if test=" params.yugaopianName != '' and params.yugaopianName != null and params.yugaopianName != 'null' ">
+                and yugaopian.yugaopian_name like CONCAT('%',#{params.yugaopianName},'%')
+            </if>
+            <if test="params.yugaopianTypes != null  and params.yugaopianTypes != ''">
+                and yugaopian.yugaopian_types = #{params.yugaopianTypes}
+            </if>
+
+            <if test=" params.yugaopianVideo != '' and params.yugaopianVideo != null and params.yugaopianVideo != 'null' ">
+                and yugaopian.yugaopian_video like CONCAT('%',#{params.yugaopianVideo},'%')
+            </if>
+            <if test=" params.yugaopianDanyan != '' and params.yugaopianDanyan != null and params.yugaopianDanyan != 'null' ">
+                and yugaopian.yugaopian_danyan like CONCAT('%',#{params.yugaopianDanyan},'%')
+            </if>
+            <if test=" params.yugaopianBianju != '' and params.yugaopianBianju != null and params.yugaopianBianju != 'null' ">
+                and yugaopian.yugaopian_bianju like CONCAT('%',#{params.yugaopianBianju},'%')
+            </if>
+            <if test=" params.yugaopianAddress != '' and params.yugaopianAddress != null and params.yugaopianAddress != 'null' ">
+                and yugaopian.yugaopian_address like CONCAT('%',#{params.yugaopianAddress},'%')
+            </if>
+            <if test=" params.yugaopianYuyan != '' and params.yugaopianYuyan != null and params.yugaopianYuyan != 'null' ">
+                and yugaopian.yugaopian_yuyan like CONCAT('%',#{params.yugaopianYuyan},'%')
+            </if>
+            <if test=" params.yugaopianShijian != '' and params.yugaopianShijian != null and params.yugaopianShijian != 'null' ">
+                and yugaopian.yugaopian_shijian like CONCAT('%',#{params.yugaopianShijian},'%')
+            </if>
+            <if test=" params.yugaopianPianchang != '' and params.yugaopianPianchang != null and params.yugaopianPianchang != 'null' ">
+                and yugaopian.yugaopian_pianchang like CONCAT('%',#{params.yugaopianPianchang},'%')
+            </if>
+            <if test=" params.yugaopianContent != '' and params.yugaopianContent != null and params.yugaopianContent != 'null' ">
+                and yugaopian.yugaopian_content like CONCAT('%',#{params.yugaopianContent},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
